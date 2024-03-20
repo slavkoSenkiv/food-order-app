@@ -1,19 +1,12 @@
-import { useEffect } from "react";
+import Header from './components/header/Header';
+import Meals from './components/menu/Meals';
+import AVAILABLE_MEALS from '../backend/data/available-meals.json'
 
-function App() {
-  useEffect(() => {
-    fetch("http://localhost:3000/meals")
-      .then((res) => res.json())
-      .then(console.log);
-  }, []);
-
+export default function App() {
   return (
     <>
-      <h1>You got this 💪</h1>
-      <p>Stuck? Not sure how to proceed?</p>
-      <p>Don't worry - we've all been there. Let's build it together!</p>
+      <Header />
+      <Meals meals={AVAILABLE_MEALS}/>
     </>
-  );
+  )
 }
-
-export default App;
