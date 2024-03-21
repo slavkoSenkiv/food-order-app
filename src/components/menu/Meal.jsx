@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { CartContext } from '../../store/cart-context';
+import CartContext from '../../store/cart-context';
 const imagesPath = '../../../backend/public/';
 
 export default function Meal({ meal }) {

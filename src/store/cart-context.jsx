@@ -1,6 +1,7 @@
 import { useReducer, createContext } from 'react';
+import AVAILABLE_MEALS from '../../backend/data/available-meals.json';
 
-export const CartContext = createContext({
+const CartContext = createContext({
   items: [],
   addItemToCart: () => {},
   updItemInCart: () => {}
@@ -8,14 +9,23 @@ export const CartContext = createContext({
 
 function cartReducer(state, action) {
   if (action.type === 'ADD_ITEM') {
+    const updMeals = [...state.items];
+    const itemToAddIndex = AVAILABLE_MEALS.findIndex(
+      (meal) => meal.id === action.payload
+    );
+    // look into ecom prop drilling
+
     console.log('add item - ', action.payload);
+    console.log(state);
+    return { ...state, itemToAdd };
   }
   if (action.type == 'UPD_ITEM') {
     console.log('update item - ', action.payload.id, action.payload.change);
+    return { ...state };
   }
 }
 
-export default function CartContextProvider({ children }) {
+export function CartContextProvider({ children }) {
   const [cartState, cartDispatch] = useReducer(cartReducer, { items: [] });
 
   function handleAddItemToCart(id) {
@@ -45,3 +55,5 @@ export default function CartContextProvider({ children }) {
     <CartContext.Provider value={ctxValue}>{children}</CartContext.Provider>
   );
 }
+
+export default CartContext;
