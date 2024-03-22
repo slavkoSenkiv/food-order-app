@@ -8,34 +8,27 @@ const CartContext = createContext({
 });
 
 function cartReducer(state, action) {
-  console.log('state', state);
-  if (action.type === 'ADD_ITEM') {
-
+  const updState = { ...state };
+  if (action.type === 'ADD_MEAL') {
     const mealToAddMenuIndex = MENU_MEALS.findIndex(
-      (meal) => meal.id === action.payload);
-    console.log('mealToAddMenuIndex', mealToAddMenuIndex);
-
+      (meal) => meal.id === action.payload
+    );
     const mealToAdd = MENU_MEALS[mealToAddMenuIndex];
-    console.log('mealToAdd', mealToAdd);
-
-    const mealInCart = state.cartMeals.find((meal) => meal === mealToAdd);
-    console.log('mealInCart', mealInCart);
-
+    const mealInCart = updState.cartMeals.find(
+      (meal) => meal.meal.id === mealToAdd.id
+    );
     if (mealInCart) {
-      console.log('meal quantity in the cart will be increased');
-
-
-      return { ...state, mealInCart };
-
+      mealInCart.quantity += 1;
+      return updState;
     } else {
-      console.log('meal will be added to the cart');
-      const obj = {meal: mealToAdd, quantity: 1}
-      return { ...state, obj };
+      const newMealObj = { meal: mealToAdd, quantity: 1 };
+      updState.cartMeals.push(newMealObj);
+      return updState;
     }
   }
-  if (action.type == 'UPD_ITEM') {
+  if (action.type == 'UPD_MEAL') {
     console.log('update item - ', action.payload.id, action.payload.change);
-    return { ...state };
+    return updState;
   }
 }
 
@@ -44,14 +37,14 @@ export function CartContextProvider({ children }) {
 
   function handleAddMealToCart(id) {
     cartDispatch({
-      type: 'ADD_ITEM',
+      type: 'ADD_MEAL',
       payload: id
     });
   }
 
   function handleUpdMealInCart(id, change) {
     cartDispatch({
-      type: 'UPD_ITEM',
+      type: 'UPD_MEAL',
       payload: {
         id: id,
         change: change

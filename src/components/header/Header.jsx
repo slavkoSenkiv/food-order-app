@@ -2,10 +2,13 @@ import logo from '../../../public/logo.jpg';
 import CartContext from '../../store/cart-context';
 import { useContext } from 'react';
 
-export default function Header() {
+export default function Header({ toggleCart }) {
   const { cartMeals } = useContext(CartContext);
 
-  const cartVolume = cartMeals.length > 0 ? cartMeals.length : 0;
+  let mealsInCart = 0;
+  if (cartMeals.length > 0) {
+    cartMeals.forEach((meal) => (mealsInCart += meal.quantity));
+  }
 
   return (
     <header id='main-header'>
@@ -13,7 +16,10 @@ export default function Header() {
         <img src={logo} />
         <h1>Reactfood</h1>
       </div>
-      <button className='text-button'>{`Cart (${cartVolume})`}</button>
+      <button
+        onClick={toggleCart}
+        className='text-button'
+      >{`Cart (${mealsInCart})`}</button>
     </header>
   );
 }
