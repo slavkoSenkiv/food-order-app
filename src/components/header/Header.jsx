@@ -3,9 +3,9 @@ import CartContext from '../../store/cart-context';
 import { useContext } from 'react';
 
 export default function Header() {
-  const { items } = useContext(CartContext);
+  const { cartMeals } = useContext(CartContext);
 
-  const cartVolume = items.length > 0 ? items.length : 0;
+  const cartVolume = cartMeals.length > 0 ? cartMeals.length : 0;
 
   return (
     <header id='main-header'>

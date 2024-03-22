@@ -1,23 +1,37 @@
 import { useReducer, createContext } from 'react';
-import AVAILABLE_MEALS from '../../backend/data/available-meals.json';
+import MENU_MEALS from '../../backend/data/available-meals.json';
 
 const CartContext = createContext({
-  items: [],
-  addItemToCart: () => {},
-  updItemInCart: () => {}
+  cartMeals: [],
+  addMealToCart: () => {},
+  updMealInCart: () => {}
 });
 
 function cartReducer(state, action) {
+  console.log('state', state);
   if (action.type === 'ADD_ITEM') {
-    const updMeals = [...state.items];
-    const itemToAddIndex = AVAILABLE_MEALS.findIndex(
-      (meal) => meal.id === action.payload
-    );
-    // look into ecom prop drilling
 
-    console.log('add item - ', action.payload);
-    console.log(state);
-    return { ...state, itemToAdd };
+    const mealToAddMenuIndex = MENU_MEALS.findIndex(
+      (meal) => meal.id === action.payload);
+    console.log('mealToAddMenuIndex', mealToAddMenuIndex);
+
+    const mealToAdd = MENU_MEALS[mealToAddMenuIndex];
+    console.log('mealToAdd', mealToAdd);
+
+    const mealInCart = state.cartMeals.find((meal) => meal === mealToAdd);
+    console.log('mealInCart', mealInCart);
+
+    if (mealInCart) {
+      console.log('meal quantity in the cart will be increased');
+
+
+      return { ...state, mealInCart };
+
+    } else {
+      console.log('meal will be added to the cart');
+      const obj = {meal: mealToAdd, quantity: 1}
+      return { ...state, obj };
+    }
   }
   if (action.type == 'UPD_ITEM') {
     console.log('update item - ', action.payload.id, action.payload.change);
@@ -26,16 +40,16 @@ function cartReducer(state, action) {
 }
 
 export function CartContextProvider({ children }) {
-  const [cartState, cartDispatch] = useReducer(cartReducer, { items: [] });
+  const [cartState, cartDispatch] = useReducer(cartReducer, { cartMeals: [] });
 
-  function handleAddItemToCart(id) {
+  function handleAddMealToCart(id) {
     cartDispatch({
       type: 'ADD_ITEM',
       payload: id
     });
   }
 
-  function handleUpdItemInCart(id, change) {
+  function handleUpdMealInCart(id, change) {
     cartDispatch({
       type: 'UPD_ITEM',
       payload: {
@@ -46,9 +60,9 @@ export function CartContextProvider({ children }) {
   }
 
   const ctxValue = {
-    items: cartState.items,
-    addItemToCart: handleAddItemToCart,
-    updItemInCart: handleUpdItemInCart
+    cartMeals: cartState.cartMeals,
+    addMealToCart: handleAddMealToCart,
+    updMealInCart: handleUpdMealInCart
   };
 
   return (
