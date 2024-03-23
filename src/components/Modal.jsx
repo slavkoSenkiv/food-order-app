@@ -14,12 +14,12 @@ const Modal = forwardRef(function Modal({ children }, ref) {
 
   return createPortal(
     <dialog ref={dialog}>
-      {children}
       <div className='modal-actions'>
         <button onClick={() => dialog.current.close()} className='text-button'>
-          Close
+          X
         </button>
       </div>
+      {children}
     </dialog>,
     document.getElementById('modal')
   );

@@ -1,13 +1,14 @@
 import { useContext } from 'react';
 import CartContext from '../store/cart-context';
 
-export default function Cart() {
+export default function Cart({ onCheckoutClick }) {
   const { cartMeals, updMealInCart, clearCart } = useContext(CartContext);
 
   const cartTotalCost = cartMeals.reduce(
     (total, mealObj) => total + mealObj.quantity * mealObj.meal.price,
     0
   );
+
   return (
     <div className='cart'>
       <h2>Your Cart</h2>
@@ -31,14 +32,15 @@ export default function Cart() {
         ))}
       </ul>
 
-      <div className='cart-total'>
-        <p>Total cost: ${cartTotalCost}</p>
+      <p className='cart-total'>Total cost: ${cartTotalCost}</p>
+
+      <div className='modal-actions'>
         {cartMeals.length > 0 && (
           <>
             <button onClick={clearCart} className='text-button'>
               Clear cart
             </button>
-            <button onClick={} className='text-button'>
+            <button onClick={onCheckoutClick} className='text-button'>
               Checkout
             </button>
           </>
