@@ -1,5 +1,5 @@
 import Meal from './Meal';
-import AVAILABLE_MEALS from '../../../backend/data/available-meals.json';
+import AVAILABLE_MEALS from '../../backend/data/available-meals.json';
 
 export default function Meals() {
   return (

@@ -1,6 +1,7 @@
-import logo from '../../../public/logo.jpg';
-import CartContext from '../../store/cart-context';
-import Modal from '../Modal';
+import logo from '../../public/logo.jpg';
+import CartContext from '../store/cart-context';
+import Modal from './Modal';
+import Cart from './Cart';
 import { useContext, useRef } from 'react';
 
 export default function Header() {
@@ -15,8 +16,7 @@ export default function Header() {
   return (
     <>
       <Modal ref={modalRef}>
-        <h1>Hello!</h1>
-        <h2>This is your cart</h2>
+        <Cart />
       </Modal>
 
       <header id='main-header'>

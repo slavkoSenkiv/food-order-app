@@ -1,5 +1,5 @@
-import Header from './components/header/Header';
-import Meals from './components/menu/Meals';
+import Header from './components/Header';
+import Meals from './components/Meals';
 import { CartContextProvider } from './store/cart-context';
 
 export default function App() {

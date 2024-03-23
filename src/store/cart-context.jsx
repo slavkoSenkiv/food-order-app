@@ -4,7 +4,8 @@ import MENU_MEALS from '../../backend/data/available-meals.json';
 const CartContext = createContext({
   cartMeals: [],
   addMealToCart: () => {},
-  updMealInCart: () => {}
+  updMealInCart: () => {},
+  clearCart: () => {}
 });
 
 function cartReducer(state, action) {
@@ -26,8 +27,16 @@ function cartReducer(state, action) {
       return updState;
     }
   }
-  if (action.type == 'UPD_MEAL') {
-    console.log('update item - ', action.payload.id, action.payload.change);
+  if (action.type === 'UPD_MEAL') {
+    const mealToUpdate = updState.cartMeals.find(
+      (mealObj) => mealObj.meal.id === action.payload.id
+    );
+    mealToUpdate.quantity += action.payload.change;
+    //TODO deal with meal removal from cart if quantity <= 0
+    return updState;
+  }
+  if (action.type === 'CLEAR') {
+    console.log('cart was cleared');
     return updState;
   }
 }
@@ -51,11 +60,17 @@ export function CartContextProvider({ children }) {
       }
     });
   }
+  function handleClearCart() {
+    cartDispatch({
+      type: 'CLEAR'
+    });
+  }
 
   const ctxValue = {
     cartMeals: cartState.cartMeals,
     addMealToCart: handleAddMealToCart,
-    updMealInCart: handleUpdMealInCart
+    updMealInCart: handleUpdMealInCart,
+    clearCart: handleClearCart
   };
 
   return (
