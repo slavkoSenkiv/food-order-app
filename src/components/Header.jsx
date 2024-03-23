@@ -3,10 +3,12 @@ import CartContext from '../store/cart-context';
 import Modal from './Modal';
 import Cart from './Cart';
 import { useContext, useRef } from 'react';
+import Checkout from './Checkout';
 
 export default function Header() {
   const { cartMeals } = useContext(CartContext);
-  const modalRef = useRef();
+  const cartRef = useRef();
+  const checkoutRef = useRef();
 
   let mealsInCart = 0;
   if (cartMeals.length > 0) {
@@ -15,8 +17,12 @@ export default function Header() {
 
   return (
     <>
-      <Modal ref={modalRef}>
+      <Modal ref={cartRef}>
         <Cart />
+      </Modal>
+      
+      <Modal ref={checkoutRef}>
+        <Checkout />
       </Modal>
 
       <header id='main-header'>

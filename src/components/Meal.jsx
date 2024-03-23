@@ -12,7 +12,8 @@ export default function Meal({ meal }) {
       <p className='meal-item-price'>${price}</p>
       <p className='meal-item-description'>{description}</p>
       <div className='meal-item-actions'>
-        <button onClick={() => addMealToCart(id)} className='button'>
+        <button onClick={() => addMealToCart(id)} 
+        className='button meal-item-actions'>
           Add to cart
         </button>
       </div>

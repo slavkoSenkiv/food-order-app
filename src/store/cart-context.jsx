@@ -32,11 +32,15 @@ function cartReducer(state, action) {
       (mealObj) => mealObj.meal.id === action.payload.id
     );
     mealToUpdate.quantity += action.payload.change;
-    //TODO deal with meal removal from cart if quantity <= 0
+    if (mealToUpdate.quantity <= 0) {
+      updState.cartMeals = updState.cartMeals.filter((mealObj) => {
+        return mealObj.meal.id !== action.payload.id;
+      });
+    }
     return updState;
   }
   if (action.type === 'CLEAR') {
-    console.log('cart was cleared');
+    updState.cartMeals = [];
     return updState;
   }
 }
