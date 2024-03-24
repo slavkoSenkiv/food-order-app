@@ -201,9 +201,15 @@ h1 {
 
 .control-row {
   display: flex;
-  justify-content: flex-start;
-  gap: 1rem;
+flex-direction: column;
+ margin-bottom: 1rem;
 }
+
+.address-row {
+  display: flex;
+  gap: 1rem;  /* Adjust gap for spacing between inputs */
+}
+
 
 .button {
   font: inherit;

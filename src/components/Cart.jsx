@@ -40,7 +40,7 @@ export default function Cart({ onCheckoutClick }) {
             <button onClick={clearCart} className='text-button'>
               Clear cart
             </button>
-            <button onClick={onCheckoutClick} className='text-button'>
+            <button onClick={onCheckoutClick} className='button'>
               Checkout
             </button>
           </>
