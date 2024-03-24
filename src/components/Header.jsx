@@ -4,12 +4,12 @@ import Modal from './Modal';
 import Cart from './Cart';
 import { useContext, useRef, useState } from 'react';
 import Checkout from './Checkout';
+import ThankYouPopup from './ThankYouPopup';
 
 export default function Header() {
   const { cartMeals } = useContext(CartContext);
   const [modalContent, setModalContent] = useState();
   const cartRef = useRef();
-  //const checkoutRef = useRef();
 
   let mealsInCart = 0;
   if (cartMeals.length > 0) {
@@ -26,15 +26,23 @@ export default function Header() {
     cartRef.current.open();
     setModalContent('cart');
   }
+  function handleSubmitCheckout() {
+    setModalContent('thanYouPopup');
+  }
 
   return (
     <>
       <Modal ref={cartRef}>
-        {modalContent === 'cart' ? (
+        {modalContent === 'cart' && (
           <Cart onCheckoutClick={handleCheckoutClick} />
-        ) : (
-          <Checkout onBackToCartClick={handleCartClick} />
         )}
+        {modalContent === 'checkout' && (
+          <Checkout
+            onBackToCartClick={handleCartClick}
+            onSubmitClick={handleSubmitCheckout}
+          />
+        )}
+        {modalContent === 'thanYouPopup' && <ThankYouPopup />}
       </Modal>
 
       <header id='main-header'>
