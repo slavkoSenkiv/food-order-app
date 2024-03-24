@@ -4,8 +4,8 @@ import Input from './Input';
 import useInput from '../hooks/useInput';
 import { isEmail, hasCorrectLength } from '../util/validation';
 
-export default function Checkout({ onBackToCartClick, handleSubmitCheckout }) {
-  const { cartMeals } = useContext(CartContext);
+export default function Checkout({ onBackToCartClick, onSubmitClick }) {
+  const { cartMeals, clearCart } = useContext(CartContext);
   const cartTotalCost = cartMeals.reduce(
     (total, mealObj) => total + mealObj.quantity * mealObj.meal.price,
     0
@@ -19,12 +19,13 @@ export default function Checkout({ onBackToCartClick, handleSubmitCheckout }) {
   } = useInput('', (value) => isEmail(value) && hasCorrectLength(value, 5, 10));
 
   function handleSubmit(event) {
-    event.preventDefauld();
+    event.preventDefault();
     if (emailHasError) {
       return;
     }
-    handleSubmitCheckout();
+    onSubmitClick();
     console.log('form submitted');
+    clearCart();
   }
   return (
     <div className='control'>
@@ -46,16 +47,14 @@ export default function Checkout({ onBackToCartClick, handleSubmitCheckout }) {
           <Input label='Street' placeholder='Plebania' />
           <Input label='Postal Code' placeholder='82100' />
         </div>
+        <div className='modal-actions'>
+          <button onClick={onBackToCartClick} className='text-button'>
+            Back to cart
+          </button>
+          {/* <button type='submit' onClick={onSubmitClick} className='button'> */}
+          <button className='button'>Submit Order</button>
+        </div>
       </form>
-
-      <div className='modal-actions'>
-        <button onClick={onBackToCartClick} className='text-button'>
-          Back to cart
-        </button>
-        <button type='submit' className='button'>
-          Submit Order
-        </button>
-      </div>
     </div>
   );
 }

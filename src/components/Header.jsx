@@ -16,18 +16,17 @@ export default function Header() {
     cartMeals.forEach((meal) => (mealsInCart += meal.quantity));
   }
 
-  function handleCheckoutClick() {
-    setModalContent((prevModalContent) =>
-      prevModalContent === 'cart' ? 'checkout' : 'cart'
-    );
-  }
-
   function handleCartClick() {
     cartRef.current.open();
     setModalContent('cart');
   }
+
+  function handleCheckoutClick() {
+    setModalContent('checkout');
+  }
+
   function handleSubmitCheckout() {
-    setModalContent('thanYouPopup');
+    setModalContent('thankYouPopup');
   }
 
   return (
@@ -42,7 +41,7 @@ export default function Header() {
             onSubmitClick={handleSubmitCheckout}
           />
         )}
-        {modalContent === 'thanYouPopup' && <ThankYouPopup />}
+        {modalContent === 'thankYouPopup' && <ThankYouPopup />}
       </Modal>
 
       <header id='main-header'>
