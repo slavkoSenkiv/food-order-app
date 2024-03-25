@@ -17,9 +17,9 @@ app.use((req, res, next) => {
  
 // available meals
 app.get('/available-meals', async (req, res) => {
-  const fileContent = await fs.readFile('./data/available-places.json');
-  const placesData = JSON.parse(fileContent);
-  res.status(200).json({ places: placesData });
+  const fileContent = await fs.readFile('./data/available-meals.json');
+  const availableMeals = JSON.parse(fileContent);
+  res.status(200).json({ availableMeals: availableMeals });
 });
 
 // cart
