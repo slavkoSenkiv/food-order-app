@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import CartContext from '../store/cart-context';
 import Input from './Input';
 import useInput from '../hooks/useInput';
-import { isEmail, hasCorrectLength } from '../util/validation';
+import { isEmail, hasCorrectLength } from '../../util/validation';
 
 export default function Checkout({ onBackToCartClick, onSubmitClick }) {
   const { cartMeals, clearCart } = useContext(CartContext);
