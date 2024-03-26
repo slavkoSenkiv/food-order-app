@@ -57,6 +57,7 @@ function cartReducer(state, action) {
 
 export function CartContextProvider({ children }) {
   const [storedCartMeals, setStoredCartMeals] = useState([]);
+  console.log('storedCartMeals', storedCartMeals);
 
   useEffect(() => {
     async function fetchMeals() {
@@ -66,14 +67,18 @@ export function CartContextProvider({ children }) {
         setStoredCartMeals(fetchedMeals);
       } catch (error) {
         console.log(error);
-      }
+      } 
     }
     fetchMeals();
-  }, []);
+  }, [cartState]);
 
-  const [cartState, cartDispatch] = useReducer(cartReducer, {
+  useEffect(() => {
+    cartDispatch({ type: 'SET_CART_MEALS', payload: storedCartMeals });
+  }, [storedCartMeals]);
+
+/*   const [cartState, cartDispatch] = useReducer(cartReducer, {
     cartMeals: storedCartMeals
-  });
+  }); */
 
   function handleAddMealToCart(id) {
     cartDispatch({

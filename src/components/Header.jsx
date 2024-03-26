@@ -11,10 +11,12 @@ export default function Header() {
   const [modalContent, setModalContent] = useState();
   const cartRef = useRef();
 
-  let mealsInCart = 0;
+  /* let mealsInCart = 0;
   if (cartMeals.length > 0) {
     cartMeals.forEach((meal) => (mealsInCart += meal.quantity));
-  }
+  } */
+  let mealsInCart = cartMeals.reduce((total, meal) => total + meal.quantity, 0);
+
 
   function handleCartClick() {
     cartRef.current.open();
