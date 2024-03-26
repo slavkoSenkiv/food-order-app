@@ -1,5 +1,6 @@
-import { useReducer, createContext } from 'react';
+import { useReducer, createContext, useState, useEffect } from 'react';
 import MENU_MEALS from '../../backend/data/available-meals.json';
+import { fetchCartMeals, updateCart } from '../../util/http';
 
 const CartContext = createContext({
   cartMeals: [],
@@ -24,9 +25,17 @@ function cartReducer(state, action) {
     } else {
       const newMealObj = { meal: mealToAdd, quantity: 1 };
       updState.cartMeals.push(newMealObj);
+
+      try {
+        updateCart(updState.cartMeals);
+      } catch (error) {
+        console.log(error);
+      }
+
       return updState;
     }
   }
+
   if (action.type === 'UPD_MEAL') {
     const mealToUpdate = updState.cartMeals.find(
       (mealObj) => mealObj.meal.id === action.payload.id
@@ -39,6 +48,7 @@ function cartReducer(state, action) {
     }
     return updState;
   }
+
   if (action.type === 'CLEAR') {
     updState.cartMeals = [];
     return updState;
@@ -46,7 +56,24 @@ function cartReducer(state, action) {
 }
 
 export function CartContextProvider({ children }) {
-  const [cartState, cartDispatch] = useReducer(cartReducer, { cartMeals: [] });
+  const [storedCartMeals, setStoredCartMeals] = useState([]);
+
+  useEffect(() => {
+    async function fetchMeals() {
+      try {
+        const fetchedMeals = await fetchCartMeals();
+        console.log('fetchedMeals', fetchedMeals);
+        setStoredCartMeals(fetchedMeals);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchMeals();
+  }, []);
+
+  const [cartState, cartDispatch] = useReducer(cartReducer, {
+    cartMeals: storedCartMeals
+  });
 
   function handleAddMealToCart(id) {
     cartDispatch({

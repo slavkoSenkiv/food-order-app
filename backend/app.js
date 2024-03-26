@@ -14,7 +14,7 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   next();
 });
- 
+
 // available meals
 app.get('/available-meals', async (req, res) => {
   const fileContent = await fs.readFile('./data/available-meals.json');
@@ -26,22 +26,22 @@ app.get('/available-meals', async (req, res) => {
 app.get('/cart', async (req, res) => {
   const fileContent = await fs.readFile('./data/cart.json');
   const cartData = JSON.parse(fileContent);
-  res.status(200).json({ cart: cartData });
+  res.status(200).json({ cartMeals: cartData });
 });
 
 app.put('/cart', async (req, res) => {
-  const cart = req.body.cart;
-  await fs.writeFile('./data/cart.json', JSON.stringify(cart));
-  res.status(200).json({message: "cart was updated"})
+  const cartMeals = req.body.cartMeals;
+  console.log('cartMeals body', cartMeals);
+  await fs.writeFile('./data/cart.json', JSON.stringify(cartMeals));
+  res.status(200).json({ message: 'cart was updated' });
 });
 
 // orders
 app.put('/orders', async (req, res) => {
   const orders = req.body.orders;
   await fs.writeFile('./data/orders.json', JSON.stringify(orders));
-  res.status(200).json({message: "Orders were updated"})
+  res.status(200).json({ message: 'Orders were updated' });
 });
-
 
 //other
 app.use((req, res, next) => {
