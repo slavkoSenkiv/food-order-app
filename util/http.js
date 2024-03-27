@@ -10,7 +10,6 @@ export async function fetchAvailableMeals() {
 }
 
 export async function updateCart(cartMeals) {
-  console.log('http', cartMeals);
   const response = await fetch(`${BASE_URL}cart`, {
     method: 'PUT',
     body: JSON.stringify({ cartMeals }),
@@ -26,6 +25,14 @@ export async function updateCart(cartMeals) {
 }
 
 export async function fetchCartMeals() {
+  /* While not strictly necessary for functionality, 
+  you can modify fetchCartMeals to check localStorage first 
+  before fetching from the server. 
+  This can improve performance by avoiding unnecessary API calls.
+  const localCart = localStorage.getItem('cart');
+  if (localCart) {
+    return JSON.parse(localCart);
+  } */
   const response = await fetch(`${BASE_URL}cart`);
   const resData = await response.json();
   if (!response.ok) {

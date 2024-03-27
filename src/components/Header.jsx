@@ -2,21 +2,21 @@ import logo from '../../public/logo.jpg';
 import CartContext from '../store/cart-context';
 import Modal from './Modal';
 import Cart from './Cart';
-import { useContext, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import Checkout from './Checkout';
 import ThankYouPopup from './ThankYouPopup';
 
 export default function Header() {
-  const { cartMeals } = useContext(CartContext);
+  const { cartMeals, fetchCart } = useContext(CartContext);
+  
+  useEffect(() => {
+    fetchCart();
+  }, [cartMeals]);
+
   const [modalContent, setModalContent] = useState();
   const cartRef = useRef();
 
-  /* let mealsInCart = 0;
-  if (cartMeals.length > 0) {
-    cartMeals.forEach((meal) => (mealsInCart += meal.quantity));
-  } */
   let mealsInCart = cartMeals.reduce((total, meal) => total + meal.quantity, 0);
-
 
   function handleCartClick() {
     cartRef.current.open();

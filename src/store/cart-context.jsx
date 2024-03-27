@@ -1,4 +1,4 @@
-import { useReducer, createContext, useState, useEffect } from 'react';
+import { useReducer, createContext } from 'react';
 import MENU_MEALS from '../../backend/data/available-meals.json';
 import { fetchCartMeals, updateCart } from '../../util/http';
 
@@ -6,11 +6,13 @@ const CartContext = createContext({
   cartMeals: [],
   addMealToCart: () => {},
   updMealInCart: () => {},
-  clearCart: () => {}
+  clearCart: () => {},
+  fetchCart: () => {}
 });
 
 function cartReducer(state, action) {
   const updState = { ...state };
+
   if (action.type === 'ADD_MEAL') {
     const mealToAddMenuIndex = MENU_MEALS.findIndex(
       (meal) => meal.id === action.payload
@@ -53,32 +55,26 @@ function cartReducer(state, action) {
     updState.cartMeals = [];
     return updState;
   }
+
+  if (action.type === 'FETCH_CART_DATA') {
+    async function fetchMeals() {
+      try {
+        const fetchedCartMeals = await fetchCartMeals();
+        updState.cartMeals = fetchedCartMeals;
+      } catch (error) {
+        console.log('custom log for fetch cart error', error);
+      }
+    }
+    console.log('1 run');
+    fetchMeals();
+    return updState;
+  }
 }
 
 export function CartContextProvider({ children }) {
-  const [storedCartMeals, setStoredCartMeals] = useState([]);
-  console.log('storedCartMeals', storedCartMeals);
-
-  useEffect(() => {
-    async function fetchMeals() {
-      try {
-        const fetchedMeals = await fetchCartMeals();
-        console.log('fetchedMeals', fetchedMeals);
-        setStoredCartMeals(fetchedMeals);
-      } catch (error) {
-        console.log(error);
-      } 
-    }
-    fetchMeals();
-  }, [cartState]);
-
-  useEffect(() => {
-    cartDispatch({ type: 'SET_CART_MEALS', payload: storedCartMeals });
-  }, [storedCartMeals]);
-
-/*   const [cartState, cartDispatch] = useReducer(cartReducer, {
-    cartMeals: storedCartMeals
-  }); */
+  const [cartState, cartDispatch] = useReducer(cartReducer, {
+    cartMeals: []
+  });
 
   function handleAddMealToCart(id) {
     cartDispatch({
@@ -96,9 +92,16 @@ export function CartContextProvider({ children }) {
       }
     });
   }
+
   function handleClearCart() {
     cartDispatch({
       type: 'CLEAR'
+    });
+  }
+
+  function handleFetchCartData() {
+    cartDispatch({
+      type: 'FETCH_CART_DATA'
     });
   }
 
@@ -106,7 +109,8 @@ export function CartContextProvider({ children }) {
     cartMeals: cartState.cartMeals,
     addMealToCart: handleAddMealToCart,
     updMealInCart: handleUpdMealInCart,
-    clearCart: handleClearCart
+    clearCart: handleClearCart,
+    fetchCart: handleFetchCartData
   };
 
   return (
