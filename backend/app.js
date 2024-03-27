@@ -31,7 +31,6 @@ app.get('/cart', async (req, res) => {
 
 app.put('/cart', async (req, res) => {
   const cartMeals = req.body.cartMeals;
-  console.log('cartMeals body', cartMeals);
   await fs.writeFile('./data/cart.json', JSON.stringify(cartMeals));
   res.status(200).json({ message: 'cart was updated' });
 });

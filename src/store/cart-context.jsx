@@ -1,4 +1,4 @@
-import { useReducer, createContext } from 'react';
+import { useReducer, createContext, useEffect, useState } from 'react';
 import MENU_MEALS from '../../backend/data/available-meals.json';
 import { fetchCartMeals, updateCart } from '../../util/http';
 
@@ -62,18 +62,31 @@ function cartReducer(state, action) {
         const fetchedCartMeals = await fetchCartMeals();
         updState.cartMeals = fetchedCartMeals;
       } catch (error) {
-        console.log('custom log for fetch cart error', error);
+        console.log(error);
       }
     }
-    console.log('1 run');
     fetchMeals();
     return updState;
   }
 }
 
 export function CartContextProvider({ children }) {
+  const [fetchedCartContent, setFetchedCartContent] = useState([]);
+
+  useEffect(() => {
+    async function fetchMeals() {
+      try {
+        const fetchedCartMeals = await fetchCartMeals();
+        setFetchedCartContent(fetchedCartMeals);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchMeals();
+  }, []);
+
   const [cartState, cartDispatch] = useReducer(cartReducer, {
-    cartMeals: []
+    cartMeals: fetchedCartContent
   });
 
   function handleAddMealToCart(id) {
