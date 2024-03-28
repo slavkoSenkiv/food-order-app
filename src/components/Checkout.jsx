@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import CartContext from '../store/cart-context';
 import Input from './Input';
 import useInput from '../hooks/useInput';
@@ -10,6 +10,9 @@ export default function Checkout({ onBackToCartClick, onSubmitClick }) {
     (total, mealObj) => total + mealObj.quantity * mealObj.meal.price,
     0
   );
+  
+  //const storedUserInfo = localStorage.getItem('chachedUsedInfo') || {}
+  //const [userInfo, setUserInfo] = useState(storedUserInfo)
 
   const {
     value: emailValue,
@@ -24,9 +27,12 @@ export default function Checkout({ onBackToCartClick, onSubmitClick }) {
       return;
     }
     onSubmitClick();
+
     console.log('form submitted');
+
     clearCart();
   }
+
   return (
     <div className='control'>
       <h2>Checkout</h2>
@@ -34,6 +40,7 @@ export default function Checkout({ onBackToCartClick, onSubmitClick }) {
 
       <form onSubmit={handleSubmit}>
         <Input label='Full Name' placeholder='Joe Doe' />
+
         <Input
           label='E-mail address'
           placeholder='joe.doe@gmail.com'
@@ -51,8 +58,9 @@ export default function Checkout({ onBackToCartClick, onSubmitClick }) {
           <button onClick={onBackToCartClick} className='text-button'>
             Back to cart
           </button>
-          {/* <button type='submit' onClick={onSubmitClick} className='button'> */}
-          <button className='button'>Submit Order</button>
+          <button type='submit' onClick={onSubmitClick} className='button'>
+            Submit Order
+          </button>
         </div>
       </form>
     </div>

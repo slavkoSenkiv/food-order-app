@@ -1,4 +1,4 @@
-export default function Input({ label, placeholder, error, ...props}) {
+export default function Input({ label, placeholder, error, ...props }) {
   return (
     <div className='control-row'>
       <label>{label}</label>

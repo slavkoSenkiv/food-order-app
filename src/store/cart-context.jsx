@@ -10,6 +10,14 @@ const CartContext = createContext({
   fetchCart: () => {}
 });
 
+function tryCatch(fn, data) {
+  try {
+    fn(data);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 function cartReducer(state, action) {
   const updState = { ...state };
 
@@ -21,19 +29,15 @@ function cartReducer(state, action) {
     const mealInCart = updState.cartMeals.find(
       (meal) => meal.meal.id === mealToAdd.id
     );
+
     if (mealInCart) {
       mealInCart.quantity += 1;
+      tryCatch(updateCart, updState.cartMeals);
       return updState;
     } else {
       const newMealObj = { meal: mealToAdd, quantity: 1 };
       updState.cartMeals.push(newMealObj);
-
-      try {
-        updateCart(updState.cartMeals);
-      } catch (error) {
-        console.log(error);
-      }
-
+      tryCatch(updateCart, updState.cartMeals);
       return updState;
     }
   }
@@ -48,11 +52,13 @@ function cartReducer(state, action) {
         return mealObj.meal.id !== action.payload.id;
       });
     }
+    tryCatch(updateCart, updState.cartMeals);
     return updState;
   }
-
+  
   if (action.type === 'CLEAR') {
     updState.cartMeals = [];
+    tryCatch(updateCart, updState.cartMeals);
     return updState;
   }
 
