@@ -8,8 +8,8 @@ export default function useInput(defaultValue, inputValidationFn) {
 
   function handleInputChange(event) {
     setEnteredValue(event.target.value);
-    //localStorage.setItem('chachedUsedInfo')
-    //console.log();
+    localStorage.setItem('chachedUsedInfo', event.target.value);
+    console.log('cache input change', localStorage.getItem('chachedUsedInfo'));
     setDidEdit(false);
   }
 

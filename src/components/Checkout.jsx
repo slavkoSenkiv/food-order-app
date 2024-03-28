@@ -10,16 +10,27 @@ export default function Checkout({ onBackToCartClick, onSubmitClick }) {
     (total, mealObj) => total + mealObj.quantity * mealObj.meal.price,
     0
   );
-  
-  //const storedUserInfo = localStorage.getItem('chachedUsedInfo') || {}
-  //const [userInfo, setUserInfo] = useState(storedUserInfo)
+  const [startingValue, setStartingValue] = useState('');
+
+  useEffect(() => {
+    const cachedData = localStorage.getItem('chachedUsedInfo');
+    if (cachedData) {
+      setStartingValue(cachedData);
+      return;
+    } else {
+      localStorage.setItem('chachedUsedInfo', startingValue);
+    }
+  }, [onBackToCartClick]);
 
   const {
     value: emailValue,
     handleInputChange: handleEmailChange,
     handleInputBlur: handleInputBlur,
     hasError: emailHasError
-  } = useInput('', (value) => isEmail(value) && hasCorrectLength(value, 5, 10));
+  } = useInput(
+    startingValue,
+    (value) => isEmail(value) && hasCorrectLength(value, 5, 10)
+  );
 
   function handleSubmit(event) {
     event.preventDefault();
