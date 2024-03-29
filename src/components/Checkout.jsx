@@ -14,13 +14,12 @@ export default function Checkout({ onBackToCartClick, onSubmitClick }) {
 
   useEffect(() => {
     const cachedData = localStorage.getItem('chachedUsedInfo');
-    if (cachedData) {
+    console.log('cached value on modal load: ', cachedData);
+    if (cachedData && cachedData.length > 0) {
       setStartingValue(cachedData);
-      return;
-    } else {
-      localStorage.setItem('chachedUsedInfo', startingValue);
+      console.log('set startingValue to cachedData');
     }
-  }, [onBackToCartClick]);
+  }, []);
 
   const {
     value: emailValue,
@@ -38,9 +37,7 @@ export default function Checkout({ onBackToCartClick, onSubmitClick }) {
       return;
     }
     onSubmitClick();
-
     console.log('form submitted');
-
     clearCart();
   }
 

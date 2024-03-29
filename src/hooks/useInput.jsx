@@ -7,9 +7,10 @@ export default function useInput(defaultValue, inputValidationFn) {
   const valueIsValid = inputValidationFn(enteredValue);
 
   function handleInputChange(event) {
-    setEnteredValue(event.target.value);
-    localStorage.setItem('chachedUsedInfo', event.target.value);
-    console.log('cache input change', localStorage.getItem('chachedUsedInfo'));
+    const newValue = event.target.value;
+    setEnteredValue(newValue);
+    localStorage.setItem('chachedUsedInfo', newValue);
+    console.log('cached value', localStorage.getItem('chachedUsedInfo'));
     setDidEdit(false);
   }
 
