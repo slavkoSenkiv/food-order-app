@@ -10,16 +10,31 @@ export default function Checkout({ onBackToCartClick, onSubmitClick }) {
     (total, mealObj) => total + mealObj.quantity * mealObj.meal.price,
     0
   );
-  const [startingValue, setStartingValue] = useState('');
 
-  useEffect(() => {
-    const cachedData = localStorage.getItem('chachedUsedInfo');
-    console.log('cached value on modal load: ', cachedData);
-    if (cachedData && cachedData.length > 0) {
-      setStartingValue(cachedData);
-      console.log('set startingValue to cachedData');
+  const [startingValue, setStartingValue] = useState(() => {
+    try {
+      const cachedUserInfo = localStorage.getItem('cachedUserInfo');
+      if (cachedUserInfo) {
+        const userInfoObj = JSON.parse(cachedUserInfo);
+        return JSON.parse(userInfoObj);
+      } else {
+        const blanckUserInfoObj = {
+          fullName: '',
+          email: '',
+          city: '',
+          street: '',
+          postalCode: ''
+        };
+        localStorage.setItem(
+          'cachedUserInfo',
+          JSON.stringify(blanckUserInfoObj)
+        );
+        return blanckUserInfoObj;
+      }
+    } catch (error) {
+      console.error('Error retrieving cached data:', error);
     }
-  }, []);
+  });
 
   const {
     value: emailValue,
@@ -27,6 +42,7 @@ export default function Checkout({ onBackToCartClick, onSubmitClick }) {
     handleInputBlur: handleInputBlur,
     hasError: emailHasError
   } = useInput(
+    'fullName',
     startingValue,
     (value) => isEmail(value) && hasCorrectLength(value, 5, 10)
   );
