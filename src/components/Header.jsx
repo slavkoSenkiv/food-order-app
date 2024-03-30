@@ -1,4 +1,4 @@
-import logo from '../../public/logo.jpg';
+import logo from '/logo.jpg';
 import CartContext from '../store/cart-context';
 import Modal from './Modal';
 import Cart from './Cart';

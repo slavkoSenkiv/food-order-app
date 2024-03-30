@@ -14,4 +14,19 @@ export function hasCorrectLength(text, minLen, maxLen) {
   }
 }
 
-
+export function charCheck(text, mustCharArr, forbidenCharArr) {
+  mustCharArr.forEach((char) => {
+    if (!text.includes(char)) {
+      console.log(`in "${text}" value required character "${char}" is missing`);
+      return false;
+    }
+  });
+  forbidenCharArr.forEach((char) => {
+    if (text.includes(char)) {
+      console.log(`in "${text}" value forbidden character "${char}" is present`);
+      return false;
+    }
+    console.log(`for value "${text}" all checks passed`);
+    return true;
+  });
+}

@@ -2,7 +2,7 @@ import { useContext, useState, useEffect } from 'react';
 import CartContext from '../store/cart-context';
 import Input from './Input';
 import useInput from '../hooks/useInput';
-import { isEmail, hasCorrectLength } from '../../util/validation';
+import { charCheck, hasCorrectLength } from '../../util/validation';
 
 export default function Checkout({ onBackToCartClick, onSubmitClick }) {
   const { cartMeals, clearCart } = useContext(CartContext);
@@ -11,14 +11,14 @@ export default function Checkout({ onBackToCartClick, onSubmitClick }) {
     0
   );
 
-  const [startingValue, setStartingValue] = useState(() => {
+  const [startUserInfoObj, setStartUserInfoObj] = useState(() => {
     try {
       const cachedUserInfo = localStorage.getItem('cachedUserInfo');
       if (cachedUserInfo) {
         const userInfoObj = JSON.parse(cachedUserInfo);
-        return JSON.parse(userInfoObj);
+        return userInfoObj;
       } else {
-        const blanckUserInfoObj = {
+        const blankUserInfoObj = {
           fullName: '',
           email: '',
           city: '',
@@ -27,9 +27,9 @@ export default function Checkout({ onBackToCartClick, onSubmitClick }) {
         };
         localStorage.setItem(
           'cachedUserInfo',
-          JSON.stringify(blanckUserInfoObj)
+          JSON.stringify(blankUserInfoObj)
         );
-        return blanckUserInfoObj;
+        return blankUserInfoObj;
       }
     } catch (error) {
       console.error('Error retrieving cached data:', error);
@@ -37,14 +37,29 @@ export default function Checkout({ onBackToCartClick, onSubmitClick }) {
   });
 
   const {
-    value: emailValue,
-    handleInputChange: handleEmailChange,
-    handleInputBlur: handleInputBlur,
-    hasError: emailHasError
+    value: fullNameValue,
+    handleInputChange: handleFullNameChange,
+    handleInputBlur: handleFullNameBlur,
+    hasError: fullNameHasError
   } = useInput(
     'fullName',
-    startingValue,
-    (value) => isEmail(value) && hasCorrectLength(value, 5, 10)
+    startUserInfoObj,
+    (value) =>
+      hasCorrectLength(value, 3, 10) &&
+      charCheck(value, [' '], ['!', '*', '?', '.'])
+  );
+
+  const {
+    value: emailValue,
+    handleInputChange: handleEmailChange,
+    handleInputBlur: handleEmailBlur,
+    hasError: emailHasError
+  } = useInput(
+    'email',
+    startUserInfoObj,
+    (value) =>
+      hasCorrectLength(value, 5, 10) &&
+      charCheck(value, ['@', '.'], ['!', '*', '?', ' '])
   );
 
   function handleSubmit(event) {
@@ -63,13 +78,20 @@ export default function Checkout({ onBackToCartClick, onSubmitClick }) {
       <p>Total cost: ${cartTotalCost}</p>
 
       <form onSubmit={handleSubmit}>
-        <Input label='Full Name' placeholder='Joe Doe' />
+        <Input
+          label='Full Name'
+          placeholder='Joe Doe'
+          onChange={handleFullNameChange}
+          onBlur={handleFullNameBlur}
+          value={fullNameValue}
+          error={fullNameHasError && 'plase enter a valid full name'}
+        />
 
         <Input
           label='E-mail address'
           placeholder='joe.doe@gmail.com'
           onChange={handleEmailChange}
-          onBlur={handleInputBlur}
+          onBlur={handleEmailBlur}
           value={emailValue}
           error={emailHasError && 'please enter a valid email'}
         />
