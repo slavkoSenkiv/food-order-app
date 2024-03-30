@@ -2,12 +2,7 @@ import { useContext } from 'react';
 import CartContext from '../store/cart-context';
 
 export default function Cart({ onCheckoutClick }) {
-  const { cartMeals, updMealInCart, clearCart } = useContext(CartContext);
-
-  const cartTotalCost = cartMeals.reduce(
-    (total, mealObj) => total + mealObj.quantity * mealObj.meal.price,
-    0
-  );
+  const { cartMeals, updMealInCart, clearCart, getCartCost } = useContext(CartContext);
 
   return (
     <div className='cart'>
@@ -32,7 +27,7 @@ export default function Cart({ onCheckoutClick }) {
         ))}
       </ul>
 
-      <p className='cart-total'>Total cost: ${cartTotalCost}</p>
+      <p className='cart-total'>Total cost: ${getCartCost()}</p>
 
       <div className='modal-actions'>
         {cartMeals.length > 0 && (

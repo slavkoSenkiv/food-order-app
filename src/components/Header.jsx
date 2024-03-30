@@ -7,16 +7,9 @@ import Checkout from './Checkout';
 import ThankYouPopup from './ThankYouPopup';
 
 export default function Header() {
-  const { cartMeals, fetchCart } = useContext(CartContext);
-  
-  useEffect(() => {
-    fetchCart();
-  }, [cartMeals]);
-
+  const { getCartVolume } = useContext(CartContext);
   const [modalContent, setModalContent] = useState();
   const cartRef = useRef();
-
-  let mealsInCart = cartMeals.reduce((total, meal) => total + meal.quantity, 0);
 
   function handleCartClick() {
     cartRef.current.open();
@@ -54,7 +47,7 @@ export default function Header() {
         <button
           onClick={handleCartClick}
           className='text-button'
-        >{`Cart (${mealsInCart})`}</button>
+        >{`Cart (${getCartVolume()})`}</button>
       </header>
     </>
   );

@@ -7,7 +7,9 @@ const CartContext = createContext({
   addMealToCart: () => {},
   updMealInCart: () => {},
   clearCart: () => {},
-  fetchCart: () => {}
+  fetchCart: () => {},
+  getCartCost: () => {},
+  getCartVolume: () => {}
 });
 
 function tryCatch(fn, data) {
@@ -19,60 +21,100 @@ function tryCatch(fn, data) {
 }
 
 function cartReducer(state, action) {
-  const updState = { ...state };
+  const updCartMeals = [ ...state.cartMeals ];
 
   if (action.type === 'ADD_MEAL') {
     const mealToAddMenuIndex = MENU_MEALS.findIndex(
       (meal) => meal.id === action.payload
     );
     const mealToAdd = MENU_MEALS[mealToAddMenuIndex];
-    const mealInCart = updState.cartMeals.find(
+    const mealInCart = updCartMeals.find(
       (meal) => meal.meal.id === mealToAdd.id
     );
 
     if (mealInCart) {
       mealInCart.quantity += 1;
-      tryCatch(updateCart, updState.cartMeals);
-      return updState;
+      tryCatch(updateCart, updCartMeals);
+      return {
+        ...state,
+        cartMeals: updCartMeals
+      };
     } else {
       const newMealObj = { meal: mealToAdd, quantity: 1 };
-      updState.cartMeals.push(newMealObj);
-      tryCatch(updateCart, updState.cartMeals);
-      return updState;
+      updCartMeals.push(newMealObj);
+      tryCatch(updateCart, updCartMeals);
+      return {
+        ...state,
+        cartMeals: updCartMeals
+      };;
     }
   }
 
   if (action.type === 'UPD_MEAL') {
-    const mealToUpdate = updState.cartMeals.find(
+    const mealToUpdate = updCartMeals.find(
       (mealObj) => mealObj.meal.id === action.payload.id
     );
     mealToUpdate.quantity += action.payload.change;
     if (mealToUpdate.quantity <= 0) {
-      updState.cartMeals = updState.cartMeals.filter((mealObj) => {
+      updCartMeals = updCartMeals.filter((mealObj) => {
         return mealObj.meal.id !== action.payload.id;
       });
     }
-    tryCatch(updateCart, updState.cartMeals);
-    return updState;
+    tryCatch(updateCart, updCartMeals);
+    return {
+      ...state,
+      cartMeals: updCartMeals
+    };
   }
-  
+
   if (action.type === 'CLEAR') {
-    updState.cartMeals = [];
-    tryCatch(updateCart, updState.cartMeals);
-    return updState;
+    updCartMeals = [];
+    tryCatch(updateCart, updCartMeals);
+    return {
+      ...state,
+      cartMeals: updCartMeals
+    };
   }
 
   if (action.type === 'FETCH_CART_DATA') {
     async function fetchMeals() {
       try {
         const fetchedCartMeals = await fetchCartMeals();
-        updState.cartMeals = fetchedCartMeals;
+        updCartMeals = fetchedCartMeals;
       } catch (error) {
         console.log(error);
       }
     }
     fetchMeals();
-    return updState;
+    return {
+      ...state,
+      cartMeals: updCartMeals
+    };
+  }
+
+  if (action.type === 'GET_TOTAL_CART_COST') {
+    console.log(updCartMeals);
+    const totalCartCost = updCartMeals.reduce(
+      (total, mealObj) => total + mealObj.quantity || 1 * mealObj.meal.price,
+      0
+    );
+    console.log(totalCartCost);
+    //const formattedTotalCartCost = `$${totalCartCost.toFixed(2)}`
+    //TODO maybe I have return the updated state in every case?
+    return totalCartCost;
+  }
+
+  if (action.type === 'GET_CART_VOLUME') {
+    console.log('updCartMeals', updCartMeals);
+    if (updCartMeals.length === 0) {
+      return 0;
+    } else {
+      const cartVolume = updCartMeals.reduce(
+        (total, mealObj) => total + mealObj.quantity || 1,
+        0
+      );
+      return cartVolume;
+    }
   }
 }
 
@@ -124,12 +166,25 @@ export function CartContextProvider({ children }) {
     });
   }
 
+  function getTotalCartCost() {
+    cartDispatch({
+      type: 'GET_TOTAL_CART_COST'
+    });
+  }
+  function getCartVolume() {
+    cartDispatch({
+      type: 'GET_CART_VOLUME'
+    });
+  }
+
   const ctxValue = {
     cartMeals: cartState.cartMeals,
     addMealToCart: handleAddMealToCart,
     updMealInCart: handleUpdMealInCart,
     clearCart: handleClearCart,
-    fetchCart: handleFetchCartData
+    fetchCart: handleFetchCartData,
+    getCartCost: getTotalCartCost,
+    getCartVolume
   };
 
   return (
