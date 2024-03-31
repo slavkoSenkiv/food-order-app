@@ -21,7 +21,9 @@ function tryCatch(fn, data) {
 }
 
 function cartReducer(state, action) {
-  const updCartMeals = [ ...state.cartMeals ];
+  console.log('state', state);
+  const updCartMeals = [...state]
+  console.log('updCartMeals', updCartMeals);
 
   if (action.type === 'ADD_MEAL') {
     const mealToAddMenuIndex = MENU_MEALS.findIndex(
@@ -46,7 +48,7 @@ function cartReducer(state, action) {
       return {
         ...state,
         cartMeals: updCartMeals
-      };;
+      };
     }
   }
 
@@ -105,7 +107,6 @@ function cartReducer(state, action) {
   }
 
   if (action.type === 'GET_CART_VOLUME') {
-    console.log('updCartMeals', updCartMeals);
     if (updCartMeals.length === 0) {
       return 0;
     } else {
@@ -133,9 +134,8 @@ export function CartContextProvider({ children }) {
     fetchMeals();
   }, []);
 
-  const [cartState, cartDispatch] = useReducer(cartReducer, {
-    cartMeals: fetchedCartContent
-  });
+  //const [cartState, cartDispatch] = useReducer(cartReducer, fetchedCartContent);
+  const [cartState, cartDispatch] = useReducer(cartReducer, []);
 
   function handleAddMealToCart(id) {
     cartDispatch({
