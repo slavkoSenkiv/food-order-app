@@ -8,8 +8,8 @@ const CartContext = createContext({
   updMealInCart: () => {},
   clearCart: () => {},
   fetchCart: () => {},
-  getCartCost: () => {},
-  getCartVolume: () => {}
+  getCartCost: () => '$ 0.00',
+  getCartVolume: () => 0
 });
 
 function tryCatch(fn, data) {
@@ -21,9 +21,13 @@ function tryCatch(fn, data) {
 }
 
 function cartReducer(state, action) {
-  console.log('state', state);
-  const updCartMeals = [...state]
-  console.log('updCartMeals', updCartMeals);
+  const updState = {...state.cartMeals};
+  const updCartMeals = updState.cartMeals;
+  console.log(
+    'updCartMeals is array?',
+    Array.isArray(updCartMeals),
+    updCartMeals
+  );
 
   if (action.type === 'ADD_MEAL') {
     const mealToAddMenuIndex = MENU_MEALS.findIndex(
@@ -93,34 +97,13 @@ function cartReducer(state, action) {
       cartMeals: updCartMeals
     };
   }
-
-  if (action.type === 'GET_TOTAL_CART_COST') {
-    console.log(updCartMeals);
-    const totalCartCost = updCartMeals.reduce(
-      (total, mealObj) => total + mealObj.quantity || 1 * mealObj.meal.price,
-      0
-    );
-    console.log(totalCartCost);
-    //const formattedTotalCartCost = `$${totalCartCost.toFixed(2)}`
-    //TODO maybe I have return the updated state in every case?
-    return totalCartCost;
-  }
-
-  if (action.type === 'GET_CART_VOLUME') {
-    if (updCartMeals.length === 0) {
-      return 0;
-    } else {
-      const cartVolume = updCartMeals.reduce(
-        (total, mealObj) => total + mealObj.quantity || 1,
-        0
-      );
-      return cartVolume;
-    }
-  }
 }
 
 export function CartContextProvider({ children }) {
   const [fetchedCartContent, setFetchedCartContent] = useState([]);
+  const [cartState, cartDispatch] = useReducer(cartReducer, {
+    cartMeals: fetchedCartContent
+  });
 
   useEffect(() => {
     async function fetchMeals() {
@@ -133,9 +116,6 @@ export function CartContextProvider({ children }) {
     }
     fetchMeals();
   }, []);
-
-  //const [cartState, cartDispatch] = useReducer(cartReducer, fetchedCartContent);
-  const [cartState, cartDispatch] = useReducer(cartReducer, []);
 
   function handleAddMealToCart(id) {
     cartDispatch({
@@ -167,18 +147,23 @@ export function CartContextProvider({ children }) {
   }
 
   function getTotalCartCost() {
-    cartDispatch({
-      type: 'GET_TOTAL_CART_COST'
-    });
+    const totalCartCost = updCartMeals.reduce(
+      (total, mealObj) => total + mealObj.quantity || 1 * mealObj.meal.price,
+      0
+    );
+    const formattedTotalCartCost = `$${totalCartCost.toFixed(2)}`
+    return formattedTotalCartCost;
   }
+
   function getCartVolume() {
-    cartDispatch({
-      type: 'GET_CART_VOLUME'
-    });
+    return cartState.cartMeals.reduce(
+      (total, meal) => total + meal.quantity,
+      0
+    );
   }
 
   const ctxValue = {
-    cartMeals: cartState.cartMeals,
+    cartMeals: cartState,
     addMealToCart: handleAddMealToCart,
     updMealInCart: handleUpdMealInCart,
     clearCart: handleClearCart,

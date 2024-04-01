@@ -2,7 +2,7 @@ import logo from '/logo.jpg';
 import CartContext from '../store/cart-context';
 import Modal from './Modal';
 import Cart from './Cart';
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 import Checkout from './Checkout';
 import ThankYouPopup from './ThankYouPopup';
 
