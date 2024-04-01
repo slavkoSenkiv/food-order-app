@@ -2,12 +2,17 @@ import logo from '/logo.jpg';
 import CartContext from '../store/cart-context';
 import Modal from './Modal';
 import Cart from './Cart';
-import { useContext, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import Checkout from './Checkout';
 import ThankYouPopup from './ThankYouPopup';
 
 export default function Header() {
-  const { getCartVolume } = useContext(CartContext);
+  const { getCartVolume, fetchCart } = useContext(CartContext);
+
+  useEffect(() => {
+    fetchCart();
+  }, []);
+
   const [modalContent, setModalContent] = useState();
   const cartRef = useRef();
 

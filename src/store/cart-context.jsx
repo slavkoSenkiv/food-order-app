@@ -21,13 +21,8 @@ function tryCatch(fn, data) {
 }
 
 function cartReducer(state, action) {
-  const updState = {...state.cartMeals};
-  const updCartMeals = updState.cartMeals;
-  console.log(
-    'updCartMeals is array?',
-    Array.isArray(updCartMeals),
-    updCartMeals
-  );
+  const updState = { ...state };
+  let updCartMeals = updState.cartMeals;
 
   if (action.type === 'ADD_MEAL') {
     const mealToAddMenuIndex = MENU_MEALS.findIndex(
@@ -85,17 +80,16 @@ function cartReducer(state, action) {
   if (action.type === 'FETCH_CART_DATA') {
     async function fetchMeals() {
       try {
-        const fetchedCartMeals = await fetchCartMeals();
-        updCartMeals = fetchedCartMeals;
+        const fetchedMeals = await fetchCartMeals();
+        return {
+          ...state,
+          cartMeals: fetchedMeals
+        };
       } catch (error) {
         console.log(error);
       }
     }
     fetchMeals();
-    return {
-      ...state,
-      cartMeals: updCartMeals
-    };
   }
 }
 
@@ -151,15 +145,19 @@ export function CartContextProvider({ children }) {
       (total, mealObj) => total + mealObj.quantity || 1 * mealObj.meal.price,
       0
     );
-    const formattedTotalCartCost = `$${totalCartCost.toFixed(2)}`
+    const formattedTotalCartCost = `$${totalCartCost.toFixed(2)}`;
     return formattedTotalCartCost;
   }
 
   function getCartVolume() {
-    return cartState.cartMeals.reduce(
-      (total, meal) => total + meal.quantity,
-      0
-    );
+    if (cartState.cartMeals) {
+      return cartState.cartMeals.reduce(
+        (total, meal) => total + meal.quantity,
+        0
+      );
+    } else {
+      return 0;
+    }
   }
 
   const ctxValue = {
