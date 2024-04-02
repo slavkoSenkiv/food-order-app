@@ -7,7 +7,7 @@
       "description": "Creamy cheddar cheese mixed with perfectly cooked macaroni, topped with crispy breadcrumbs. A classic comfort food.",
       "image": "images/mac-and-cheese.jpg"
     },
-    "quantity": 5
+    "quantity": 4
   },
   {
     "meal": {
@@ -17,6 +17,6 @@
       "description": "A classic pizza with fresh mozzarella, tomatoes, and basil on a thin and crispy crust.",
       "image": "images/margherita-pizza.jpg"
     },
-    "quantity": 3
+    "quantity": 1
   }
 ]

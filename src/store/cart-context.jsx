@@ -150,7 +150,10 @@ export function CartContextProvider({ children }) {
   }
 
   function getCartVolume() {
-    return cartState.cartMeals.reduce((total, meal) => total + meal.quantity, 0) || 0;
+    return cartState.cartMeals.reduce(
+      (total, meal) => total + meal.quantity,
+      0
+    );
   }
 
   const ctxValue = {
