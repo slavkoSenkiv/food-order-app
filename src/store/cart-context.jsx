@@ -78,32 +78,19 @@ function cartReducer(state, action) {
   }
 
   if (action.type === 'FETCH_CART_DATA') {
-    async function fetchMeals() {
-      try {
-        const fetchedMeals = await fetchCartMeals();
-        return {
-          ...state,
-          cartMeals: fetchedMeals
-        };
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    fetchMeals();
+    updCartMeals = action.payload;
+    return { ...updState, cartMeals: updCartMeals };
   }
 }
 
 export function CartContextProvider({ children }) {
-  const [fetchedCartContent, setFetchedCartContent] = useState([]);
-  const [cartState, cartDispatch] = useReducer(cartReducer, {
-    cartMeals: fetchedCartContent
-  });
+  const [cartState, cartDispatch] = useReducer(cartReducer, { cartMeals: [] });
 
   useEffect(() => {
     async function fetchMeals() {
       try {
         const fetchedCartMeals = await fetchCartMeals();
-        setFetchedCartContent(fetchedCartMeals);
+        cartDispatch({ type: 'FETCH_CART_DATA', payload: fetchedCartMeals });
       } catch (error) {
         console.log(error);
       }
