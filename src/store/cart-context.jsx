@@ -150,14 +150,7 @@ export function CartContextProvider({ children }) {
   }
 
   function getCartVolume() {
-    if (cartState.cartMeals) {
-      return cartState.cartMeals.reduce(
-        (total, meal) => total + meal.quantity,
-        0
-      );
-    } else {
-      return 0;
-    }
+    return cartState.cartMeals.reduce((total, meal) => total + meal.quantity, 0) || 0;
   }
 
   const ctxValue = {

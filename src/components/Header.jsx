@@ -7,11 +7,7 @@ import Checkout from './Checkout';
 import ThankYouPopup from './ThankYouPopup';
 
 export default function Header() {
-  const { getCartVolume, fetchCart } = useContext(CartContext);
-
-  useEffect(() => {
-    fetchCart();
-  }, []);
+  const { getCartVolume} = useContext(CartContext);
 
   const [modalContent, setModalContent] = useState();
   const cartRef = useRef();
