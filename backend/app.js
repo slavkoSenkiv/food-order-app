@@ -37,8 +37,8 @@ app.put('/cart', async (req, res) => {
 
 // orders
 app.put('/orders', async (req, res) => {
-  const orders = req.body.orders;
-  await fs.writeFile('./data/orders.json', JSON.stringify(orders));
+  const orderData = req.body.orderData;
+  await fs.writeFile('./data/orders.json', JSON.stringify(orderData));
   res.status(200).json({ message: 'Orders were updated' });
 });
 

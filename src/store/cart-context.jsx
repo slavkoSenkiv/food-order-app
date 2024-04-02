@@ -128,8 +128,8 @@ export function CartContextProvider({ children }) {
   }
 
   function getTotalCartCost() {
-    const totalCartCost = updCartMeals.reduce(
-      (total, mealObj) => total + mealObj.quantity || 1 * mealObj.meal.price,
+    const totalCartCost = cartState.cartMeals.reduce(
+      (total, mealObj) => total + mealObj.quantity * mealObj.meal.price,
       0
     );
     const formattedTotalCartCost = `$${totalCartCost.toFixed(2)}`;
@@ -144,7 +144,7 @@ export function CartContextProvider({ children }) {
   }
 
   const ctxValue = {
-    cartMeals: cartState,
+    cartMeals: cartState.cartMeals,
     addMealToCart: handleAddMealToCart,
     updMealInCart: handleUpdMealInCart,
     clearCart: handleClearCart,

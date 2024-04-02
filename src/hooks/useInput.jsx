@@ -10,7 +10,6 @@ export default function useInput(propName, startUserInfoObj, inputValidationFn) 
     const newValue = event.target.value;
     startUserInfoObj[propName] = newValue;
     setEnteredValue(newValue);
-    localStorage.setItem('cachedUserInfo', JSON.stringify(startUserInfoObj));
     setDidEdit(false);
   }
 

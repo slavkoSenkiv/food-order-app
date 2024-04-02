@@ -1,8 +1,9 @@
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useState } from 'react';
 import CartContext from '../store/cart-context';
 import Input from './Input';
 import useInput from '../hooks/useInput';
 import { charCheck, hasCorrectLength } from '../../util/validation';
+import { updateOrders } from '../../util/http';
 
 export default function Checkout({ onBackToCartClick, onSubmitClick }) {
   const { cartMeals, clearCart } = useContext(CartContext);
@@ -25,10 +26,6 @@ export default function Checkout({ onBackToCartClick, onSubmitClick }) {
           street: '',
           postalCode: ''
         };
-        localStorage.setItem(
-          'cachedUserInfo',
-          JSON.stringify(blankUserInfoObj)
-        );
         return blankUserInfoObj;
       }
     } catch (error) {
@@ -66,6 +63,11 @@ export default function Checkout({ onBackToCartClick, onSubmitClick }) {
     event.preventDefault();
     if (emailHasError) {
       return;
+    }
+    try {
+      updateOrders({ startUserInfoObj });
+    } catch (error) {
+      console.log(error);
     }
     onSubmitClick();
     console.log('form submitted');

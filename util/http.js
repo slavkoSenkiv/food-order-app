@@ -24,6 +24,21 @@ export async function updateCart(cartMeals) {
   return resData.message;
 }
 
+export async function updateOrders(userInfo) {
+  const response = await fetch(`${BASE_URL}orders`, {
+    method: 'PUT',
+    body: JSON.stringify({ orderData: userInfo }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+  const resData = await response.json();
+  if (!response.ok) {
+    throw new Error('failed to update orders');
+  }
+  return resData.message;
+}
+
 export async function fetchCartMeals() {
   /* While not strictly necessary for functionality, 
   you can modify fetchCartMeals to check localStorage first 

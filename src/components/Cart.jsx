@@ -27,7 +27,7 @@ export default function Cart({ onCheckoutClick }) {
         ))}
       </ul>
 
-      <p className='cart-total'>Total cost: ${getCartCost()}</p>
+      <p className='cart-total'>Total cost: {getCartCost()}</p>
 
       <div className='modal-actions'>
         {cartMeals.length > 0 && (
