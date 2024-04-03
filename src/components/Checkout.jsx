@@ -12,12 +12,12 @@ export default function Checkout({ onBackToCartClick, onSubmitClick }) {
     0
   );
 
-  const [startUserInfoObj, setStartUserInfoObj] = useState(() => {
+  const [orderInfo, setOrderInfo] = useState(() => {
     try {
       const cachedUserInfo = localStorage.getItem('cachedUserInfo');
       if (cachedUserInfo) {
         const userInfoObj = JSON.parse(cachedUserInfo);
-        return userInfoObj;
+        return { userInfo: userInfoObj, cartInfo: cartMeals };
       } else {
         const blankUserInfoObj = {
           fullName: '',
@@ -26,7 +26,7 @@ export default function Checkout({ onBackToCartClick, onSubmitClick }) {
           street: '',
           postalCode: ''
         };
-        return blankUserInfoObj;
+        return { userInfo: blankUserInfoObj, cartInfo: cartMeals };
       }
     } catch (error) {
       console.error('Error retrieving cached data:', error);
@@ -40,7 +40,7 @@ export default function Checkout({ onBackToCartClick, onSubmitClick }) {
     hasError: fullNameHasError
   } = useInput(
     'fullName',
-    startUserInfoObj,
+    orderInfo.userInfo,
     (value) =>
       hasCorrectLength(value, 3, 10) &&
       charCheck(value, [' '], ['!', '*', '?', '.'])
@@ -53,7 +53,7 @@ export default function Checkout({ onBackToCartClick, onSubmitClick }) {
     hasError: emailHasError
   } = useInput(
     'email',
-    startUserInfoObj,
+    orderInfo.userInfo,
     (value) =>
       hasCorrectLength(value, 5, 10) &&
       charCheck(value, ['@', '.'], ['!', '*', '?', ' '])
@@ -61,11 +61,12 @@ export default function Checkout({ onBackToCartClick, onSubmitClick }) {
 
   function handleSubmit(event) {
     event.preventDefault();
-    if (emailHasError) {
+    /* if (emailHasError) {
       return;
-    }
+    } */
     try {
-      updateOrders({ startUserInfoObj });
+      console.log('trying to update orders info', orderInfo);
+      updateOrders({ orderInfo });
     } catch (error) {
       console.log(error);
     }
@@ -106,7 +107,7 @@ export default function Checkout({ onBackToCartClick, onSubmitClick }) {
           <button onClick={onBackToCartClick} className='text-button'>
             Back to cart
           </button>
-          <button type='submit' onClick={onSubmitClick} className='button'>
+          <button type='submit' className='button'>
             Submit Order
           </button>
         </div>

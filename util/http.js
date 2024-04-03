@@ -24,10 +24,10 @@ export async function updateCart(cartMeals) {
   return resData.message;
 }
 
-export async function updateOrders(userInfo) {
+export async function updateOrders(orderData) {
   const response = await fetch(`${BASE_URL}orders`, {
     method: 'PUT',
-    body: JSON.stringify({ orderData: userInfo }),
+    body: JSON.stringify({orderData}),
     headers: {
       'Content-Type': 'application/json'
     }
