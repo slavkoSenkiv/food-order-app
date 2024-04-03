@@ -61,17 +61,12 @@ export default function Checkout({ onBackToCartClick, onSubmitClick }) {
 
   function handleSubmit(event) {
     event.preventDefault();
-    /* if (emailHasError) {
-      return;
-    } */
     try {
-      console.log('trying to update orders info', orderInfo);
       updateOrders({ orderInfo });
     } catch (error) {
       console.log(error);
     }
     onSubmitClick();
-    console.log('form submitted');
     clearCart();
   }
 

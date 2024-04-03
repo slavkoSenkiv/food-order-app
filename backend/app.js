@@ -1,6 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import fs from 'node:fs/promises';
+import { log } from 'node:console';
 const PORT = process.env.PORT || 3000;
 
 const app = express();
@@ -36,10 +37,19 @@ app.put('/cart', async (req, res) => {
 });
 
 // orders
+
 app.put('/orders', async (req, res) => {
-  const orderData = req.body.orderData;
-  await fs.writeFile('./data/orders.json', JSON.stringify(orderData));
-  res.status(200).json({ message: 'Orders were updated' });
+  const orderInfo = req.body.orderInfo;
+  try {
+    const existingOrders = await fs.readFile('./data/orders.json');
+    const orders = JSON.parse(existingOrders);
+    orders.push(orderInfo);
+    await fs.writeFile('./data/orders.json', JSON.stringify(orders));
+    res.status(200).json({ message: 'Orders were updated' });
+  } catch (error) {
+    console.error('Error updating orders:', error);
+    res.status(500).json({ error: 'Failed to update orders' });
+  }
 });
 
 //other

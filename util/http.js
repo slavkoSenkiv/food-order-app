@@ -24,18 +24,21 @@ export async function updateCart(cartMeals) {
   return resData.message;
 }
 
-export async function updateOrders(orderData) {
+export async function updateOrders(orderInfo) {
+  console.log('update orders is called');
   const response = await fetch(`${BASE_URL}orders`, {
     method: 'PUT',
-    body: JSON.stringify({orderData}),
+    body: JSON.stringify({ orderInfo }),
     headers: {
       'Content-Type': 'application/json'
     }
   });
-  const resData = await response.json();
+  
+  console.log('response', response);
   if (!response.ok) {
     throw new Error('failed to update orders');
   }
+  const resData = await response.json();
   return resData.message;
 }
 
