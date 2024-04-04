@@ -1,71 +1,65 @@
-const fs = require("fs/promises");
-
-const bodyParser = require("body-parser");
-const express = require("express");
+import express from 'express';
+import bodyParser from 'body-parser';
+import fs from 'node:fs/promises';
+import { log } from 'node:console';
+const PORT = process.env.PORT || 3000;
 
 const app = express();
 
+app.use(express.static('images'));
 app.use(bodyParser.json());
-app.use(express.static("backend/public"));
 
 app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, PUT');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   next();
 });
 
-app.get("/meals", async (req, res) => {
-  const meals = await fs.readFile("backend/data/available-meals.json", "utf8");
-  res.json(JSON.parse(meals));
+// available meals
+app.get('/available-meals', async (req, res) => {
+  const fileContent = await fs.readFile('./data/available-meals.json');
+  const availableMeals = JSON.parse(fileContent);
+  res.status(200).json({ availableMeals: availableMeals });
 });
 
-app.post("/orders", async (req, res) => {
-  const orderData = req.body.order;
-
-  if (
-    orderData === null ||
-    orderData.items === null ||
-    orderData.items.length === 0
-  ) {
-    return res.status(400).json({ message: "Missing data." });
-  }
-
-  if (
-    orderData.customer.email === null ||
-    !orderData.customer.email.includes("@") ||
-    orderData.customer.name === null ||
-    orderData.customer.name.trim() === "" ||
-    orderData.customer.street === null ||
-    orderData.customer.street.trim() === "" ||
-    orderData.customer["postal-code"] === null ||
-    orderData.customer["postal-code"].trim() === "" ||
-    orderData.customer.city === null ||
-    orderData.customer.city.trim() === ""
-  ) {
-    return res.status(400).json({
-      message:
-        "Missing data: Email, name, street, postal code or city is missing.",
-    });
-  }
-
-  const newOrder = {
-    ...orderData,
-    id: (Math.random() * 1000).toString(),
-  };
-  const orders = await fs.readFile("backend/data/orders.json", "utf8");
-  const allOrders = JSON.parse(orders);
-  allOrders.push(newOrder);
-  await fs.writeFile("backend/data/orders.json", JSON.stringify(allOrders));
-  res.status(201).json({ message: "Order created!" });
+// cart
+app.get('/cart', async (req, res) => {
+  const fileContent = await fs.readFile('./data/cart.json');
+  const cartData = JSON.parse(fileContent);
+  res.status(200).json({ cartMeals: cartData });
 });
 
-app.use((req, res) => {
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
-
-  res.status(404).json({ message: "Not found" });
+app.put('/cart', async (req, res) => {
+  const cartMeals = req.body.cartMeals;
+  await fs.writeFile('./data/cart.json', JSON.stringify(cartMeals));
+  res.status(200).json({ message: 'cart was updated' });
 });
 
-app.listen(3000);
+// orders
+
+app.put('/orders', async (req, res) => {
+  const orderInfo = req.body.orderInfo;
+  try {
+    const existingOrders = await fs.readFile('./data/orders.json');
+    const orders = JSON.parse(existingOrders);
+    orders.push(orderInfo);
+    await fs.writeFile('./data/orders.json', JSON.stringify(orders));
+    res.status(200).json({ message: 'Orders were updated' });
+  } catch (error) {
+    console.error('Error updating orders:', error);
+    res.status(500).json({ error: 'Failed to update orders' });
+  }
+});
+
+//other
+app.use((req, res, next) => {
+  if (req.method === 'OPTIONS') {
+    return next();
+  }
+  res.status(404).json({ message: '404 - not found' });
+});
+
+app.listen(PORT, () => {
+  console.log('server is up and running on port', PORT);
+});
