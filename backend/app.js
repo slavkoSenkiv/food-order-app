@@ -1,12 +1,12 @@
-const fs = require("fs/promises");
+import express from 'express';
+import bodyParser from 'body-parser';
+import fs from 'node:fs/promises';
 
-const bodyParser = require("body-parser");
-const express = require("express");
 
 const app = express();
 
 app.use(bodyParser.json());
-app.use(express.static("backend/public"));
+app.use(express.static("public"));
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -16,7 +16,7 @@ app.use((req, res, next) => {
 });
 
 app.get("/meals", async (req, res) => {
-  const meals = await fs.readFile("backend/data/available-meals.json", "utf8");
+  const meals = await fs.readFile("./data/available-meals.json", "utf8");
   res.json(JSON.parse(meals));
 });
 
@@ -68,4 +68,6 @@ app.use((req, res) => {
   res.status(404).json({ message: "Not found" });
 });
 
-app.listen(3000);
+app.listen(3000, () => {
+  console.log('server is up and running on port', 3000);
+});
