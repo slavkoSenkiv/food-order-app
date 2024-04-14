@@ -21,6 +21,10 @@ body {
   padding: 3rem 10%;
 }
 
+.center {
+  text-align: center;
+}
+
 #main-header #title {
   display: flex;
   gap: 1rem;
@@ -140,6 +144,13 @@ h1 {
   font-size: 1.15rem;
   font-weight: bold;
   color: #46443c;
+}
+
+.error {
+  background-color: yellow;
+  color: red;
+  width: 30%;
+  margin: auto;
 }
 
 .cart-item {

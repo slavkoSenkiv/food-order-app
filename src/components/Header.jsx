@@ -1,55 +1,28 @@
-import logo from '/logo.jpg';
-import CartContext from '../store/cart-context';
-import Modal from './Modal';
-import Cart from './Cart';
-import { useContext, useEffect, useRef, useState } from 'react';
-import Checkout from './Checkout';
-import ThankYouPopup from './ThankYouPopup';
-
+import { useContext } from 'react';
+import logoImg from '../assets/logo.jpg';
+import Button from './UI/Button';
+import CartContext from './store/CartContext';
+import UserProgressContext from './store/UserProgressContext';
 export default function Header() {
-  const { getCartVolume } = useContext(CartContext);
-
-  const [modalContent, setModalContent] = useState();
-  const cartRef = useRef();
-
-  function handleCartClick() {
-    cartRef.current.open();
-    setModalContent('cart');
-  }
-
-  function handleCheckoutClick() {
-    setModalContent('checkout');
-  }
-
-  function handleSubmitCheckout() {
-    setModalContent('thankYouPopup');
+  const cartCtx = useContext(CartContext);
+  const userProgressCtx = useContext(UserProgressContext)
+  const totalCartItems = cartCtx.items.reduce(
+    (totalNumberOfItems, item) => totalNumberOfItems + item.quantity,
+    0
+  );
+  function handleShowCart() {
+    userProgressCtx.showCart();
   }
 
   return (
-    <>
-      <Modal ref={cartRef}>
-        {modalContent === 'cart' && (
-          <Cart onCheckoutClick={handleCheckoutClick} />
-        )}
-        {modalContent === 'checkout' && (
-          <Checkout
-            onBackToCartClick={handleCartClick}
-            onSubmitClick={handleSubmitCheckout}
-          />
-        )}
-        {modalContent === 'thankYouPopup' && <ThankYouPopup />}
-      </Modal>
-
-      <header id='main-header'>
-        <div id='title'>
-          <img src={logo} />
-          <h1>Reactfood</h1>
-        </div>
-        <button
-          onClick={handleCartClick}
-          className='text-button'
-        >{`Cart (${getCartVolume()})`}</button>
-      </header>
-    </>
+    <header id='main-header'>
+      <div id='title'>
+        <img src={logoImg} alt='react food logo' />
+        <h1>ReactFood</h1>
+      </div>
+      <nav>
+        <Button textOnly onClick={handleShowCart}  >Cart ({totalCartItems})</Button>
+      </nav>
+    </header>
   );
 }

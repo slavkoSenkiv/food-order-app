@@ -1,46 +1,51 @@
 import { useContext } from 'react';
-import CartContext from '../store/cart-context';
+import CartContext from './store/CartContext';
+import { currencyFormatter } from '../util/formatting';
+import Button from './UI/Button';
+import Modal from './UI/Modal';
+import UserProgressContext from './store/UserProgressContext';
+import CartItem from './CartItem';
 
-export default function Cart({ onCheckoutClick }) {
-  const { cartMeals, updMealInCart, clearCart, getCartCost } = useContext(CartContext);
-
+export default function Cart() {
+  const cartCtx = useContext(CartContext);
+  const userProgressCtx = useContext(UserProgressContext);
+  const cartTotal = cartCtx.items.reduce(
+    (totalPrice, item) => totalPrice + item.quantity * item.price,
+    0
+  );
+  function handleCloseCart() {
+    userProgressCtx.hideCart();
+  }
+  function handleGoToCheckout() {
+    userProgressCtx.showCheckout();
+  }
   return (
-    <div className='cart'>
-      <h2>Your Cart</h2>
-
+    <Modal
+      className='cart'
+      open={userProgressCtx.progress === 'cart'}
+      onClose={userProgressCtx.progress === 'cart' ? handleCloseCart : null}
+    >
+      <h2>Your cart</h2>
       <ul>
-        {cartMeals.map((mealObj) => (
-          <li key={mealObj.meal.id} className='cart-item'>
-            <p>
-              {mealObj.meal.name} - {mealObj.quantity} x ${mealObj.meal.price}
-            </p>
-            <div className='cart-item-actions'>
-              <button onClick={() => updMealInCart(mealObj.meal.id, -1)}>
-                -
-              </button>
-              <p>{mealObj.quantity}</p>
-              <button onClick={() => updMealInCart(mealObj.meal.id, 1)}>
-                +
-              </button>
-            </div>
-          </li>
+        {cartCtx.items.map((item) => (
+          <CartItem
+            key={item.id}
+            {...item}
+            /* you can deconstruct {...item} in the component definition */
+            onIncrease={() => cartCtx.addItem(item)}
+            onDecrease={() => cartCtx.removeItem(item.id)}
+          />
         ))}
       </ul>
-
-      <p className='cart-total'>Total cost: {getCartCost()}</p>
-
-      <div className='modal-actions'>
-        {cartMeals.length > 0 && (
-          <>
-            <button onClick={clearCart} className='text-button'>
-              Clear cart
-            </button>
-            <button onClick={onCheckoutClick} className='button'>
-              Checkout
-            </button>
-          </>
+      <p className='cart-total'>{currencyFormatter.format(cartTotal)}</p>
+      <p className='modal-actions'>
+        <Button textOnly onClick={handleCloseCart}>
+          Close
+        </Button>
+        {cartCtx.items.length > 0 && (
+          <Button onClick={handleGoToCheckout}>Go to Checkout</Button>
         )}
-      </div>
-    </div>
+      </p>
+    </Modal>
   );
 }

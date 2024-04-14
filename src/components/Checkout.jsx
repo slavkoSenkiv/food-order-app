@@ -1,112 +1,104 @@
-import { useContext, useState } from 'react';
-import CartContext from '../store/cart-context';
-import Input from './Input';
-import useInput from '../hooks/useInput';
-import { charCheck, hasCorrectLength } from '../../util/validation';
-import { updateOrders } from '../../util/http';
+import { useContext } from 'react';
+import Modal from './UI/Modal';
+import CartContext from './store/CartContext';
+import { currencyFormatter } from '../util/formatting';
+import Input from './UI/Input';
+import Button from './UI/Button';
+import UserProgressContext from './store/UserProgressContext';
+import useHttp from '../hooks/useHttp';
+import Error from './Error';
 
-export default function Checkout({ onBackToCartClick, onSubmitClick }) {
-  const { cartMeals, clearCart } = useContext(CartContext);
-  const cartTotalCost = cartMeals.reduce(
-    (total, mealObj) => total + mealObj.quantity * mealObj.meal.price,
+const requestConfig = {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  }
+};
+
+export default function Checkout() {
+  const cartCtx = useContext(CartContext);
+  const userProgressCtx = useContext(UserProgressContext);
+
+  const {
+    data,
+    isLoading: isSending,
+    error,
+    sendRequest,
+    clearData
+  } = useHttp('http://localhost:3000/orders', requestConfig);
+
+  const cartTotal = cartCtx.items.reduce(
+    (total, item) => total + item.price * item.quantity,
     0
   );
-
-  const [orderInfo, setOrderInfo] = useState(() => {
-    try {
-      const cachedUserInfo = localStorage.getItem('cachedUserInfo');
-      if (cachedUserInfo) {
-        const userInfoObj = JSON.parse(cachedUserInfo);
-        return { userInfo: userInfoObj, cartInfo: cartMeals };
-      } else {
-        const blankUserInfoObj = {
-          fullName: '',
-          email: '',
-          city: '',
-          street: '',
-          postalCode: ''
-        };
-        return { userInfo: blankUserInfoObj, cartInfo: cartMeals };
-      }
-    } catch (error) {
-      console.error('Error retrieving cached data:', error);
-    }
-  });
-
-  const {
-    value: fullNameValue,
-    handleInputChange: handleFullNameChange,
-    handleInputBlur: handleFullNameBlur,
-    hasError: fullNameHasError
-  } = useInput(
-    'fullName',
-    orderInfo.userInfo,
-    (value) =>
-      hasCorrectLength(value, 3, 10) &&
-      charCheck(value, [' '], ['!', '*', '?', '.'])
-  );
-
-  const {
-    value: emailValue,
-    handleInputChange: handleEmailChange,
-    handleInputBlur: handleEmailBlur,
-    hasError: emailHasError
-  } = useInput(
-    'email',
-    orderInfo.userInfo,
-    (value) =>
-      hasCorrectLength(value, 5, 10) &&
-      charCheck(value, ['@', '.'], ['!', '*', '?', ' '])
-  );
+  function handleClose() {
+    userProgressCtx.hideCheckout();
+  }
+  function handleFinish() {
+    userProgressCtx.hideCheckout();
+    cartCtx.clearCart();
+    clearData();
+  }
 
   function handleSubmit(event) {
     event.preventDefault();
-    try {
-      updateOrders({ orderInfo });
-    } catch (error) {
-      console.log(error);
-    }
-    onSubmitClick();
-    clearCart();
+    const fd = new FormData(event.target);
+    const customerData = Object.fromEntries(fd.entries());
+
+    sendRequest(
+      JSON.stringify({
+        order: {
+          items: cartCtx.items,
+          customer: customerData
+        }
+      })
+    );
+  }
+
+  let actions = (
+    <>
+      <Button type='button' textOnly onClick={handleClose}>
+        Close
+      </Button>
+      <Button>Submit Order</Button>
+    </>
+  );
+
+  if (isSending) {
+    actions = <span>Sending order data...</span>;
+  }
+
+  if (data && !error) {
+    return (
+      <Modal
+        open={userProgressCtx.progress === 'checkout'}
+        onClose={handleFinish}
+      >
+        <h2>Success!</h2>
+        <p>Your order was successfully submitted</p>
+        <p>we will back to you soon</p>
+        <p className='modal-actions'>
+          <Button onClick={handleFinish}>Okay</Button>
+        </p>
+      </Modal>
+    );
   }
 
   return (
-    <div className='control'>
-      <h2>Checkout</h2>
-      <p>Total cost: ${cartTotalCost}</p>
-
+    <Modal open={userProgressCtx.progress === 'checkout'} onClose={handleClose}>
       <form onSubmit={handleSubmit}>
-        <Input
-          label='Full Name'
-          placeholder='Joe Doe'
-          onChange={handleFullNameChange}
-          onBlur={handleFullNameBlur}
-          value={fullNameValue}
-          error={fullNameHasError && 'plase enter a valid full name'}
-        />
-
-        <Input
-          label='E-mail address'
-          placeholder='joe.doe@gmail.com'
-          onChange={handleEmailChange}
-          onBlur={handleEmailBlur}
-          value={emailValue}
-          error={emailHasError && 'please enter a valid email'}
-        />
-        <div className='address-row'>
-          <Input label='City' placeholder='Lviv' />
-          <Input label='Street' placeholder='Plebania' />
-          <Input label='Postal Code' placeholder='82100' />
+        <h2>Checkout</h2>
+        <p>Cart Total: {currencyFormatter.format(cartTotal)}</p>
+        <Input label='Full Name' type='text' id='name' />
+        <Input label='E-Mail Adress' type='email' id='email' />
+        <Input label='Street' type='text' id='street' />
+        <div className='control-row'>
+          <Input label='Postal Code' type='text' id='postal-code' />
+          <Input label='City' type='text' id='city' />
         </div>
-        <div className='modal-actions'>
-          <button onClick={onBackToCartClick} className='text-button'>
-            Back to cart
-          </button>
-          <button type='submit' className='button'>
-            Submit Order
-          </button>
-        </div>
+        {error && <Error title='Failed to submit order' message={error} />}
+        <p className='modal-actions'>{actions}</p>
       </form>
-    </div>
+    </Modal>
   );
 }

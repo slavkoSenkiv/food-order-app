@@ -1,13 +1,26 @@
+//import { useEffect } from 'react';
+import Cart from './components/Cart';
+import Checkout from './components/Checkout';
 import Header from './components/Header';
 import Meals from './components/Meals';
-import { CartContextProvider } from './store/cart-context';
+import { CartContextProvider } from './components/store/CartContext';
+import { UserProgressContextProvider } from './components/store/UserProgressContext';
 
-export default function App() {
+function App() {
+  /* useEffect(() => {
+    fetch('http://localhost:3000/meals')
+      .then((res) => res.json())
+      .then(console.log);
+  }, []); */
 
   return (
-    <CartContextProvider>
-      <Header />
-      <Meals />
-    </CartContextProvider>
+    <UserProgressContextProvider>
+      <CartContextProvider>
+        <Header />
+        <Meals />
+        <Cart />
+        <Checkout />
+      </CartContextProvider>
+    </UserProgressContextProvider>
   );
 }
